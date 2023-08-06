@@ -1,19 +1,23 @@
 <!doctype html>
 <html lang="de" class="no-js">
+
   <head>
     <meta charset="utf-8">
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script>
-  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
-</script>
+    document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+  </script>
     <link rel="stylesheet" href="/assets/css/main.css">
     <link rel="stylesheet" href="/assets/css/particles.css">
     <link rel="preload"
       href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css"
-      as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css"></noscript>
+      as="style"
+      onload="this.onload=null;this.rel='stylesheet'">
+    <noscript>
+      <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css">
+    </noscript>
 
   </head>
 
@@ -40,9 +44,11 @@
               Florians Blog
 
             </a>
-            <ul class="visible-links"><li class="masthead__menu-item">
+            <ul class="visible-links">
+              <li class="masthead__menu-item">
                 <a href="/about/">Über mich</a>
-              </li></ul>
+              </li>
+            </ul>
 
             <button class="greedy-nav__toggle hidden" type="button">
               <span class="visually-hidden">Menü ein-/ausschalten</span>
@@ -84,7 +90,8 @@
                 <li itemprop="homeLocation" itemscope
                   itemtype="https://schema.org/Place">
                   <i class="fas fa-fw fa-map-marker-alt" aria-hidden="true"></i>
-                  <span itemprop="name" class="p-locality">Bayern</span>
+                  <span itemprop="name"
+                    class="p-locality">Bayern</span>
                 </li>
 
               </ul>
@@ -100,6 +107,44 @@
           <h3 class="archive__subtitle">Aktuelle Beiträge</h3>
 
           <div class="entries-list">
+
+            <div class="list__item">
+              <article class="archive__item" itemscope
+                itemtype="https://schema.org/CreativeWork">
+
+                <h2 class="archive__item-title no_toc" itemprop="headline">
+
+                  <a href="/Hack-The-Box-Agile-Writeup/" rel="permalink">Hack
+                    The Box Agile Writeup
+                  </a>
+
+                </h2>
+
+                <p class="page__meta">
+
+                  <span class="page__meta-date">
+                    <i class="far fa-calendar-alt" aria-hidden="true"></i>
+
+                    <time datetime="2023-08-06T00:00:00+02:00">6 August, 2023</time>
+                  </span>
+
+                  <span class="page__meta-sep"></span>
+
+                  <span class="page__meta-readtime">
+                    <i class="far fa-clock" aria-hidden="true"></i>
+
+                    5 Minuten zum Lesen
+
+                  </span>
+
+                </p>
+
+                <p class="archive__item-excerpt" itemprop="description">Writeup
+                  zur Agile Maschine von Hack The Box
+
+                </p>
+              </article>
+            </div>
 
             <div class="list__item">
               <article class="archive__item" itemscope
@@ -156,7 +201,8 @@
         </div>
 
         <div class="page__footer-copyright">&copy; 2023 B4M4B0Y. Möglich durch
-          <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a
+          <a href="https://jekyllrb.com"
+            rel="nofollow">Jekyll</a> &amp; <a
             href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/"
             rel="nofollow">Minimal Mistakes</a>.</div>
 
@@ -169,4 +215,5 @@
     <script src="/assets/js/particles.js"></script>
 
   </body>
+
 </html>

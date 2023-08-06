@@ -188,7 +188,7 @@ Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
               </ul>
 
               <h3 id="wordlist-für-lfi">Wordlist für LFI</h3>
-
+              <p><br /></p>
               <div class="language-plaintext highlighter-rouge"><div
                   class="highlight"><pre class="highlight"><code>https://github.com/swisskyrepo/PayloadsAllTheThings/blob/master/Directory%20Traversal/Intruder/dotdotpwn.txt
 </code></pre></div></div>
@@ -200,8 +200,8 @@ Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
                 also sehr hoch, sollte eine LFI vorhanden sein.</p>
 
               <h3 id="erfolg-mit-lfi">Erfolg mit LFI</h3>
-
-              <p><img src="/assets/writeups/inject/lfi.png" alt="LFI" /></p>
+              <p><br />
+                <img src="/assets/writeups/inject/lfi.png" alt="LFI" /></p>
 
               <p>Wie man sehen kann, waren wir mit dem einfachen Payload</p>
               <div class="language-plaintext highlighter-rouge"><div
@@ -227,8 +227,8 @@ Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
               </ul>
 
               <h3 id="lfi-und-wie-geht-es-weiter">LFI und wie geht es weiter?</h3>
-
-              <p>Nachdem wir mit der LFI die Benutzer “phil” und “frank” in der
+              <p><br />
+                Nachdem wir mit der LFI die Benutzer “phil” und “frank” in der
                 /etc/passwd Datei ausfindig machen konnten, wird es Zeit die
                 Webanwendung genauer unter die Lupe zu nehmen. Hierzu verwenden
                 wir folgenden Payload</p>
@@ -248,10 +248,10 @@ Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
 
               <h3 id="identifikation-der-schwachstelle">Identifikation der
                 Schwachstelle</h3>
-
-              <p>Lassen wir uns die Inhalte des WebApp-Verzeichnisses mit der
-                LFI anzeigen, sehen wir unter anderem eine pom.xml Datei und
-                noch weitere Dateien, welche bereits auf eine Java-Anwendung
+              <p><br />
+                Lassen wir uns die Inhalte des WebApp-Verzeichnisses mit der LFI
+                anzeigen, sehen wir unter anderem eine pom.xml Datei und noch
+                weitere Dateien, welche bereits auf eine Java-Anwendung
                 hindeuten.<br />
                 Wir sehen uns den Inhalt der pom.xml Datei an und stellen fest,
                 dass das Springframework der Version 2.6.5 verwendet wird.
@@ -266,17 +266,16 @@ Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
                 der Fall.</p>
 
               <h3 id="ausnutzen-der-schwachstelle">Ausnutzen der Schwachstelle</h3>
-
-              <p>In der folgenden Abbildung sieht man die erfolgreiche
-                Ausführung des Metasploitmoduls
-                “spring_cloud_function_spel_injection”:</p>
+              <p><br />
+                In der folgenden Abbildung sieht man die erfolgreiche Ausführung
+                des Metasploitmoduls “spring_cloud_function_spel_injection”:</p>
 
               <p><img src="/assets/writeups/inject/meterpreter.png"
                   alt="Foothold" /></p>
 
               <h3 id="benutzer-phil-übernehmen">Benutzer phil übernehmen</h3>
-
-              <p>Wir haben eine meterpreter-shell als Benutzer frank. Bei der
+              <p><br />
+                Wir haben eine meterpreter-shell als Benutzer frank. Bei der
                 Enumeration der typischen Dateien und Verzeichnisse fällt vor
                 allem das .m2 Verzeichnis in franks Home Verzeichnis auf. Dieses
                 enthält eine settings.xml Datei mit interessanten Informationen.</p>
@@ -313,8 +312,8 @@ Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
                 phils Home Verzeichnis befindet sich die erste Flag (user.txt).</p>
 
               <h3 id="benutzer-root-übernehmen">Benutzer root übernehmen</h3>
-
-              <p>Um den Benutzer root zu übernehmen habe ich zuerst linpeas und
+              <p><br />
+                Um den Benutzer root zu übernehmen habe ich zuerst linpeas und
                 dann pspy verwendet.</p>
               <ul>
                 <li>Linpeas ist ein Privilege Escalation Script, welches
@@ -407,6 +406,16 @@ CMD: UID=0     PID=315175 | /usr/bin/cp /root/playbook_1.yml /opt/automation/tas
                   aria-hidden="true"></i><span> LinkedIn</span></a>
             </section>
 
+            <nav class="pagination">
+
+              <a href="#" class="pagination--pager disabled">Vorherige</a>
+
+              <a href="/Hack-The-Box-Agile-Writeup/" class="pagination--pager"
+                title="Hack The Box Agile Writeup
+">Nächste</a>
+
+            </nav>
+
           </div>
 
         </article>
@@ -414,6 +423,48 @@ CMD: UID=0     PID=315175 | /usr/bin/cp /root/playbook_1.yml /opt/automation/tas
         <div class="page__related">
           <h2 class="page__related-title">Ihnen gefällt vielleicht auch</h2>
           <div class="grid__wrapper">
+
+            <div class="grid__item">
+              <article class="archive__item" itemscope
+                itemtype="https://schema.org/CreativeWork">
+
+                <div class="archive__item-teaser">
+                  <img src="/assets/images/writeups/agile/teaser.png" alt>
+                </div>
+
+                <h2 class="archive__item-title no_toc" itemprop="headline">
+
+                  <a href="/Hack-The-Box-Agile-Writeup/" rel="permalink">Hack
+                    The Box Agile Writeup
+                  </a>
+
+                </h2>
+
+                <p class="page__meta">
+
+                  <span class="page__meta-date">
+                    <i class="far fa-fw fa-calendar-alt" aria-hidden="true"></i>
+
+                    <time datetime="2023-08-06T00:00:00+02:00">6 August, 2023</time>
+                  </span>
+
+                  <span class="page__meta-sep"></span>
+
+                  <span class="page__meta-readtime">
+                    <i class="far fa-fw fa-clock" aria-hidden="true"></i>
+
+                    5 Minuten zum Lesen
+
+                  </span>
+
+                </p>
+
+                <p class="archive__item-excerpt" itemprop="description">Writeup
+                  zur Agile Maschine von Hack The Box
+
+                </p>
+              </article>
+            </div>
 
           </div>
         </div>

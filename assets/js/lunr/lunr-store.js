@@ -4,4 +4,10 @@ var store = [{
         "tags": [],
         "url": "/Hack-The-Box-Inject-Writeup/",
         "teaser": "/assets/images/writeups/inject/teaser.jpg"
+      },{
+        "title": "Hack The Box Agile Writeup",
+        "excerpt":"Writeup zur Agile Maschine von Hack The Box Schwierigkeit - Medium Nmap scan Nmap scan report for 10.129.166.121 Host is up (0.026s latency). Not shown: 65533 closed tcp ports (conn-refused) PORT STATE SERVICE VERSION 22/tcp open ssh OpenSSH 8.9p1 Ubuntu 3ubuntu0.1 (Ubuntu Linux; protocol 2.0) | ssh-hostkey: | 256 f4bcee21d71f1aa26572212d5ba6f700...","categories": [],
+        "tags": [],
+        "url": "/Hack-The-Box-Agile-Writeup/",
+        "teaser": "/assets/images/writeups/agile/teaser.png"
       }]

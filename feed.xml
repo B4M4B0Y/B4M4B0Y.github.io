@@ -1,4 +1,193 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.3">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2023-08-02T19:29:04+02:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Florians Blog</title><subtitle>Florians Portfolio und Writeups zu CTF&apos;s.</subtitle><author><name>Florian aka B4M4B0Y</name></author><entry><title type="html">Hack The Box Inject Writeup</title><link href="http://localhost:4000/Hack-The-Box-Inject-Writeup/" rel="alternate" type="text/html" title="Hack The Box Inject Writeup" /><published>2023-08-02T00:00:00+02:00</published><updated>2023-08-02T00:00:00+02:00</updated><id>http://localhost:4000/Hack-The-Box-Inject-Writeup</id><content type="html" xml:base="http://localhost:4000/Hack-The-Box-Inject-Writeup/">&lt;h1 id=&quot;writeup-zur-inject-maschine-von-hack-the-box&quot;&gt;Writeup zur Inject Maschine von Hack The Box&lt;/h1&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.3">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2023-08-06T20:32:47+02:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Florians Blog</title><subtitle>Florians Portfolio und Writeups zu CTF&apos;s.</subtitle><author><name>Florian aka B4M4B0Y</name></author><entry><title type="html">Hack The Box Agile Writeup</title><link href="http://localhost:4000/Hack-The-Box-Agile-Writeup/" rel="alternate" type="text/html" title="Hack The Box Agile Writeup" /><published>2023-08-06T00:00:00+02:00</published><updated>2023-08-06T00:00:00+02:00</updated><id>http://localhost:4000/Hack-The-Box-Agile-Writeup</id><content type="html" xml:base="http://localhost:4000/Hack-The-Box-Agile-Writeup/">&lt;h1 id=&quot;writeup-zur-agile-maschine-von-hack-the-box&quot;&gt;Writeup zur Agile Maschine von Hack The Box&lt;/h1&gt;
+
+&lt;h2 id=&quot;schwierigkeit---medium&quot;&gt;Schwierigkeit - Medium&lt;/h2&gt;
+
+&lt;h2 id=&quot;nmap-scan&quot;&gt;Nmap scan&lt;/h2&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Nmap scan report for 10.129.166.121
+Host is up (0.026s latency).
+Not shown: 65533 closed tcp ports (conn-refused)
+PORT   STATE SERVICE VERSION
+22/tcp open  ssh     OpenSSH 8.9p1 Ubuntu 3ubuntu0.1 (Ubuntu Linux; protocol 2.0)
+| ssh-hostkey:
+|   256 f4bcee21d71f1aa26572212d5ba6f700 (ECDSA)
+|_  256 65c1480d88cbb975a02ca5e6377e5106 (ED25519)
+80/tcp open  http    nginx 1.18.0 (Ubuntu)
+|_http-title: Did not follow redirect to http://superpass.htb
+|_http-server-header: nginx/1.18.0 (Ubuntu)
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Wir fügen superpass.htb zu unserer /etc/hosts Datei mit der zugehörigen IP-Adresse (10.129.166.121) hinzu.&lt;/p&gt;
+
+&lt;h2 id=&quot;weboberfläche&quot;&gt;Weboberfläche&lt;/h2&gt;
+
+&lt;p&gt;Die Suche nach Subdomains mit ffuf war ohne Erfolg, also sehen wir uns die Weboberfläche genauer an.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/writeups/agile/web.png&quot; alt=&quot;Weboberfläche&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Es handelt sich um einen Passwortmanager mit der Möglichkeit sich einzuloggen. Weiter unten (nicht auf dem Bild) gibt es einen Button “Get Started” der uns zu “superpass.htb/vault” führt.&lt;/p&gt;
+
+&lt;p&gt;Wir registrieren einen dummy-user und testen die Funktionalitäten der Webanwendung.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/writeups/agile/vault.png&quot; alt=&quot;Vault&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Wir können mehrere Passwörter in unser vault zu beliebigen Seiten speichern. Interessant könnte allerdings der Button “Export” sein, diese Request schauen wir uns mit BurpSuite genauer an.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/writeups/agile/export.png&quot; alt=&quot;Export&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Wir sehen, dass unsere Passwörter nach einiger Zeit zurückgesetzt werden, daher der 500 Internal Server Error. Allerdings sehen wir auch im title-Tag des HTML Codes, dass die Datei “/tmp/test_export_xxx.csv” nicht gefunden werden konnte.&lt;/p&gt;
+
+&lt;h3 id=&quot;lfi&quot;&gt;LFI&lt;/h3&gt;
+&lt;p&gt;&lt;br /&gt;
+&lt;img src=&quot;/assets/writeups/agile/lfi.png&quot; alt=&quot;LFI&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Der Parameter &lt;strong&gt;fn&lt;/strong&gt; der Request zum Exportieren enthält tatsächlich eine LFI-Vulnerability. Die herausstehenden Benutzer der Maschine sind:&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;corum
+edwards
+dev_admin
+runner
+root
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h3 id=&quot;lfi-und-wie-geht-es-weiter&quot;&gt;LFI und wie geht es weiter?&lt;/h3&gt;
+&lt;p&gt;&lt;br /&gt;
+Überprüfen wir einmal die Umgebung, in der wir uns befinden. Hierzu schauen wir uns folgende zwei Dateien an:&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;/proc/self/environ
+/proc/self/cmdline
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Wir stellen folgendes fest:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/writeups/agile/environ.png&quot; alt=&quot;environ&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;außerdem:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/writeups/agile/cmdline.png&quot; alt=&quot;cmdline&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Die Webanwendung wird aus einer virtuellen Umgebung (venv) mit gunicorn vom Benutzer “www-data” gestartet.&lt;br /&gt;
+Wir haben es also mit einer Python-Webanwendung zu tun. &lt;br /&gt;
+Schauen wir uns einmal die Webanwendung genauer an. Hierzu nutzen wir die LFI-Vulnerability, um “/app/app/superpass/views/vault_views.py” zu analysieren.&lt;br /&gt;
+Den Pfad zu dieser Datei verrät uns eine Fehlermeldung, welche seltsamerweise ab und zu auftritt.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/writeups/agile/webroot.png&quot; alt=&quot;webroot&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Wie die Abbildung vermuten lässt, befindet sich die Webroot der Webanwendung in dem Verzeichnis “/app/app/superpass”.&lt;/p&gt;
+
+&lt;p&gt;Da es sich um eine Python Applikation handelt, ist es bei der Verwendung von Flask üblich eine “app.py” Datei zu erstellen. Tatsächlich existiert eine solche Datei, welche weitere import-Anweisungen enthält:&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;from superpass.views import home_views
+from superpass.views import vault_views
+from superpass.views import account_views
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Die Datei “/app/app/superpass/views/vault_views.py” enthält unter anderem folgenden Codeausschnitt:&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;@blueprint.get(&apos;/vault/row/&amp;lt;id&amp;gt;&apos;)
+@response(template_file=&apos;vault/partials/password_row.html&apos;)
+@login_required
+def get_row(id):
+    password = password_service.get_password_by_id(id, current_user.id)
+
+    return {&quot;p&quot;: password}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Das sieht sehr nach einer &lt;strong&gt;IDOR&lt;/strong&gt; Vulnerabilty aus.&lt;br /&gt;
+Browsen wir also “http://superpass.htb/vault/row/&amp;lt;id&amp;gt;” an, sollten wir ein Passwort zurückbekommen.&lt;/p&gt;
+
+&lt;p&gt;Stand heute (06.08.2023) existiert diese IDOR Vulnerability nicht mehr. Allerdings werde ich trotzdem den Weg mit der IDOR Vulnerability verfolgen. Die eigentliche Lösung zum Foothold dieser Maschine bezieht sich auf die Generierung des PINs der Debugger Konsole von “Werkzeug”, einer Python WSGI (web server gateway interface) web application library. Hierzu kann man sich im nachfolgenden Link ausführlicher beschäftigen.&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;https://book.hacktricks.xyz/network-services-pentesting/pentesting-web/werkzeug
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h3 id=&quot;benutzer-corum-übernehmen&quot;&gt;Benutzer corum übernehmen&lt;/h3&gt;
+&lt;p&gt;&lt;br /&gt;
+Mit dem generierten Werkzeug Konsolen PIN kann man nun eine Reverse Shell als www-data erhalten und die Datenbank nach den Passwörtern der Benutzer corum und edwards durchsuchen.&lt;br /&gt;
+Allerdings können wir mit der IDOR-Vulnerability beim browsen nach “http://superpass.htb/vault/row/8” folgendes sehen:&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;agile corum 5db7caa1d13cc37c9fc2
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Nun können wir uns direkt mit dem Benutzer corum und dem obigen Passwort über ssh anmelden.&lt;/p&gt;
+
+&lt;h3 id=&quot;benutzer-edwards-übernehmen&quot;&gt;Benutzer edwards übernehmen&lt;/h3&gt;
+&lt;p&gt;&lt;br /&gt;
+Beim enumerieren der Maschine stellen wir das Vorhandensein einer weitere Webanwendung fest.&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;corum@agile:/app$ cd app-testing/
+corum@agile:/app/app-testing$ ls
+README.md  __pycache__  requirements.txt  superpass  tests  wsgi-dev.py
+corum@agile:/app/app-testing$ ll
+total 48
+drwxr-xr-x 9 runner runner 4096 Feb  8 16:36 ./
+drwxr-xr-x 6 root   root   4096 Feb  8 16:29 ../
+drwxr-xr-x 3 runner runner 4096 Feb  8 16:36 .cache/
+drwxrwxr-x 3 runner runner 4096 Jan 25 01:36 .local/
+drwx------ 3 runner runner 4096 Jan 25 01:36 .pki/
+drwxr-xr-x 3 runner runner 4096 Dec 13 18:10 .pytest_cache/
+-rw-r--r-- 1 runner runner  128 Jan 23 21:27 README.md
+drwxr-xr-x 2 runner runner 4096 Jan 25 17:02 __pycache__/
+-rw-r--r-- 1 runner runner   95 Jan 23 21:27 requirements.txt
+drwxr-xr-x 9 runner runner 4096 Feb  7 13:13 superpass/
+drwxr-xr-x 3 runner runner 4096 Feb  6 18:10 tests/
+-rw-r--r-- 1 runner runner   73 Jan 23 21:27 wsgi-dev.py
+corum@agile:/app/app-testing$ cat README.md
+# Testing
+
+New builds in this folder are tested periodically.
+
+If the tests pass, the new build is deployed to the active site.
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Im Verzeichnis /app/app-testing befindet sich wahrscheinlich eine Testversion der eigentlichen Webanwendung.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/writeups/agile/test_app_port.png&quot; alt=&quot;Testapp&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Wir sehen in der “/app/app-testing/app.py” Datei, dass die Testanwendung auf Port 5555 nur auf localhost (netstat) läuft.&lt;br /&gt;
+Da wir bereits mit ssh als corum auf der Maschine angemeldet sind, können wir eine einfache lokale Portweiterleitung durchführen, um die Testanwendung in unserem Browser zu erreichen:&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ssh -L 8081:localhost:5555 corum@superpass.htb
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Browsen wir nun “http://localhost:8081/vault/row/1” an, können wir die IDOR-Vulnerability erneut ausnutzen, um das Passwort für den Benutzer edwards zu bekommen.&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;edwards:d07867c6267dcb5df0af
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h3 id=&quot;benutzer-root-übernehmen&quot;&gt;Benutzer root übernehmen&lt;/h3&gt;
+&lt;p&gt;&lt;br /&gt;
+Um der Root Benutzer zu werden führen wir zunächst “sudo -l” aus, da wir edwards Password bereits wissen.&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Matching Defaults entries for edwards on agile:
+    env_reset, mail_badpass, secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin\:/snap/bin,
+    use_pty
+
+User edwards may run the following commands on agile:
+    (dev_admin : dev_admin) sudoedit /app/config_test.json
+    (dev_admin : dev_admin) sudoedit /app/app-testing/tests/functional/creds.txt
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Wir können sudoedit als dev_admin Benutzer ausführen.&lt;br /&gt;
+Googelt man nach sudoedit exploit wird man schnell fündig.
+Mit diesem Exploit ist es uns möglich Dateien des Benutzers dev_admin zu sehen.&lt;/p&gt;
+
+&lt;h3 id=&quot;pspy&quot;&gt;pspy&lt;/h3&gt;
+&lt;p&gt;&lt;br /&gt;
+Laden wir pspy auf die Maschine und führen das Programm aus, stellen wir fest, dass der root Benutzer in regelemäßigen Abständen folgenden Befehl ausführt:&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;/bin/bash -c source /app/venv/activate
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Dieser Befehl aktiviert lediglich die virtuelle Python Umgebung der Webanwendung.&lt;br /&gt;
+So weit so gut, allerdings lohnt es sich genauer hinzusehen, denn mit folgendem Befehl finden wir heraus, dass wir in der Gruppe dieser Datei (/app/venv/activate) sind:&lt;/p&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;find / -type f -group dev_admin 2&amp;gt;/dev/null
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Mit Hilfe des sudoedit exploits können wir nun die Datei “/app/venv/activate” ändern, um nicht die virtuelle Python Umgebung zu aktivieren, sondern um beispielsweise eine Python reverse shell zu starten.&lt;br /&gt;
+Mit dieser Privilege Escalation ist es uns möglich eine Shell als Root Benutzer zu erhalten.&lt;/p&gt;</content><author><name>Florian aka B4M4B0Y</name></author><summary type="html">Writeup zur Agile Maschine von Hack The Box</summary></entry><entry><title type="html">Hack The Box Inject Writeup</title><link href="http://localhost:4000/Hack-The-Box-Inject-Writeup/" rel="alternate" type="text/html" title="Hack The Box Inject Writeup" /><published>2023-08-02T00:00:00+02:00</published><updated>2023-08-02T00:00:00+02:00</updated><id>http://localhost:4000/Hack-The-Box-Inject-Writeup</id><content type="html" xml:base="http://localhost:4000/Hack-The-Box-Inject-Writeup/">&lt;h1 id=&quot;writeup-zur-inject-maschine-von-hack-the-box&quot;&gt;Writeup zur Inject Maschine von Hack The Box&lt;/h1&gt;
 
 &lt;h2 id=&quot;schwierigkeit---easy&quot;&gt;Schwierigkeit - Easy&lt;/h2&gt;
 
@@ -42,14 +231,14 @@ Hier sollten wir den Parameter “img” auf jeden Fall auf eine LFI (Local File
 &lt;/ul&gt;
 
 &lt;h3 id=&quot;wordlist-für-lfi&quot;&gt;Wordlist für LFI&lt;/h3&gt;
-
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
 &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;https://github.com/swisskyrepo/PayloadsAllTheThings/blob/master/Directory%20Traversal/Intruder/dotdotpwn.txt
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 &lt;p&gt;Obenstehende Wordlist eignet sich sehr gut für das Aufspüren von LFI-Vulnerabilities, da diese sowohl Payloads für Linux als auch für Windows enthält. Zusätzlich enthält sie auch Payloads in allen möglichen Encodings (z.B. URL-Encoded). Die Wahrscheinlichkeit eine LFI zu finden ist mit dieser Wordlist also sehr hoch, sollte eine LFI vorhanden sein.&lt;/p&gt;
 
 &lt;h3 id=&quot;erfolg-mit-lfi&quot;&gt;Erfolg mit LFI&lt;/h3&gt;
-
-&lt;p&gt;&lt;img src=&quot;/assets/writeups/inject/lfi.png&quot; alt=&quot;LFI&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;br /&gt;
+&lt;img src=&quot;/assets/writeups/inject/lfi.png&quot; alt=&quot;LFI&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;Wie man sehen kann, waren wir mit dem einfachen Payload&lt;/p&gt;
 &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;../../../../../../etc/passwd
@@ -67,8 +256,8 @@ Um nicht manuell alle LFI-Payloads ausprobieren zu müssen, habe ich ffuf verwen
 &lt;/ul&gt;
 
 &lt;h3 id=&quot;lfi-und-wie-geht-es-weiter&quot;&gt;LFI und wie geht es weiter?&lt;/h3&gt;
-
-&lt;p&gt;Nachdem wir mit der LFI die Benutzer “phil” und “frank” in der /etc/passwd Datei ausfindig machen konnten, wird es Zeit die Webanwendung genauer unter die Lupe zu nehmen. Hierzu verwenden wir folgenden Payload&lt;/p&gt;
+&lt;p&gt;&lt;br /&gt;
+Nachdem wir mit der LFI die Benutzer “phil” und “frank” in der /etc/passwd Datei ausfindig machen konnten, wird es Zeit die Webanwendung genauer unter die Lupe zu nehmen. Hierzu verwenden wir folgenden Payload&lt;/p&gt;
 &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;../../../../../../var/www
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 &lt;p&gt;Üblicherweise können wir mit einer LFI &lt;strong&gt;nicht&lt;/strong&gt; Verzeichnisse auflisten, sondern nur den Inhalt von Dateien anzeigen. Dies war hier allerdings möglich, was typisch für Java-Anwendungen ist.&lt;br /&gt;
@@ -80,8 +269,8 @@ angezeigt.&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;h3 id=&quot;identifikation-der-schwachstelle&quot;&gt;Identifikation der Schwachstelle&lt;/h3&gt;
-
-&lt;p&gt;Lassen wir uns die Inhalte des WebApp-Verzeichnisses mit der LFI anzeigen, sehen wir unter anderem eine pom.xml Datei und noch weitere Dateien, welche bereits auf eine Java-Anwendung hindeuten.&lt;br /&gt;
+&lt;p&gt;&lt;br /&gt;
+Lassen wir uns die Inhalte des WebApp-Verzeichnisses mit der LFI anzeigen, sehen wir unter anderem eine pom.xml Datei und noch weitere Dateien, welche bereits auf eine Java-Anwendung hindeuten.&lt;br /&gt;
 Wir sehen uns den Inhalt der pom.xml Datei an und stellen fest, dass das Springframework der Version 2.6.5 verwendet wird.
 Googeln wir nach “Springframework 2.6.5 exploit” finden wir Ergebnisse für den “Spring4Shell” Exploit&lt;/p&gt;
 
@@ -90,14 +279,14 @@ Googeln wir nach “Springframework 2.6.5 exploit” finden wir Ergebnisse für 
 &lt;p&gt;Durch diesen Link von rapid7 ist es wahrscheinlich, dass sogar ein Modul für Metasploit verfügbar ist, und tatsächlich ist dies der Fall.&lt;/p&gt;
 
 &lt;h3 id=&quot;ausnutzen-der-schwachstelle&quot;&gt;Ausnutzen der Schwachstelle&lt;/h3&gt;
-
-&lt;p&gt;In der folgenden Abbildung sieht man die erfolgreiche Ausführung des Metasploitmoduls “spring_cloud_function_spel_injection”:&lt;/p&gt;
+&lt;p&gt;&lt;br /&gt;
+In der folgenden Abbildung sieht man die erfolgreiche Ausführung des Metasploitmoduls “spring_cloud_function_spel_injection”:&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;/assets/writeups/inject/meterpreter.png&quot; alt=&quot;Foothold&quot; /&gt;&lt;/p&gt;
 
 &lt;h3 id=&quot;benutzer-phil-übernehmen&quot;&gt;Benutzer phil übernehmen&lt;/h3&gt;
-
-&lt;p&gt;Wir haben eine meterpreter-shell als Benutzer frank. Bei der Enumeration der typischen Dateien und Verzeichnisse fällt vor allem das .m2 Verzeichnis in franks Home Verzeichnis auf. Dieses enthält eine settings.xml Datei mit interessanten Informationen.&lt;/p&gt;
+&lt;p&gt;&lt;br /&gt;
+Wir haben eine meterpreter-shell als Benutzer frank. Bei der Enumeration der typischen Dateien und Verzeichnisse fällt vor allem das .m2 Verzeichnis in franks Home Verzeichnis auf. Dieses enthält eine settings.xml Datei mit interessanten Informationen.&lt;/p&gt;
 
 &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&amp;lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&amp;gt;
 &amp;lt;settings xmlns=&quot;http://maven.apache.org/POM/4.0.0&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
@@ -124,8 +313,8 @@ Googeln wir nach “Springframework 2.6.5 exploit” finden wir Ergebnisse für 
 &lt;p&gt;Geben wir nach Aufforderung das Password der settings.xml Datei ein, haben wir erfolgreich zum Benutzer phil gewechselt. In phils Home Verzeichnis befindet sich die erste Flag (user.txt).&lt;/p&gt;
 
 &lt;h3 id=&quot;benutzer-root-übernehmen&quot;&gt;Benutzer root übernehmen&lt;/h3&gt;
-
-&lt;p&gt;Um den Benutzer root zu übernehmen habe ich zuerst linpeas und dann pspy verwendet.&lt;/p&gt;
+&lt;p&gt;&lt;br /&gt;
+Um den Benutzer root zu übernehmen habe ich zuerst linpeas und dann pspy verwendet.&lt;/p&gt;
 &lt;ul&gt;
   &lt;li&gt;Linpeas ist ein Privilege Escalation Script, welches Vektoren für Privilege Escalation anzeigt.&lt;/li&gt;
   &lt;li&gt;pspy ist ein Script, mit dem man Prozesse sehen kann, die von anderen Benutzern ausgeführt werden.
