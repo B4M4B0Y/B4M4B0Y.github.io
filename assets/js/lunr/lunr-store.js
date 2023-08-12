@@ -10,4 +10,10 @@ var store = [{
         "tags": [],
         "url": "/Hack-The-Box-Agile-Writeup/",
         "teaser": "/assets/writeups/agile/teaser.png"
+      },{
+        "title": "Hack The Box Busqueda Writeup",
+        "excerpt":"Writeup zur Busqueda Maschine von Hack The Box Schwierigkeit - Easy Nmap scan Nmap scan report for 10.129.199.156 Host is up (0.023s latency). Not shown: 65533 closed tcp ports (conn-refused) PORT STATE SERVICE VERSION 22/tcp open ssh OpenSSH 8.9p1 Ubuntu 3ubuntu0.1 (Ubuntu Linux; protocol 2.0) | ssh-hostkey: | 256 4fe3a667a227f9118dc30ed773a02c28...","categories": [],
+        "tags": [],
+        "url": "/Hack-The-Box-Busqueda-Writeup/",
+        "teaser": "/assets/writeups/busqueda/teaser.jpg"
       }]

